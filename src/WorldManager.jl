@@ -63,6 +63,21 @@ function block_state(x::Int, y::Int, z::Int)
     end
 end
 
+function block_state1(x::Int, y::Int, z::Int)
+    surfaceY = 5;
+    rands = trunc(Int, 10*sample(sampler, x/10, z/10));
+    surfaceY = surfaceY + rands;
+    # return (y<surfaceY) ? (:gray, 0.9) : (:gray, 0);
+    seaLevel = 4
+    if (y<surfaceY)
+        return (y<3) ? (:gray, 1.0) : (:green, 1.0)
+    elseif (y< seaLevel)
+        return (:blue, 0.2)
+    else
+        return (:grey,0)
+    end
+end
+
 @enum BlockType begin
     air = 0
     stone = 1
@@ -102,4 +117,12 @@ function generate_chunk(db, chunkindexX::Int, chunkindexZ::Int)
     cZs = [chunkindexZ for i in 1:length(snos)]
     table_data = (sno=snos, chunkX=cXs, chunkZ=cZs, x=xs, y=ys, z=zs, blocktype=bls)
     DBInterface.executemany(write_query, table_data) 
+end
+
+
+function surface_height(x::Int, z::Int)
+    surfaceY = 5;
+    rands = trunc(Int, 10*sample(sampler, x/10, z/10));
+    surfaceY = surfaceY + rands;
+    return surfaceY
 end
