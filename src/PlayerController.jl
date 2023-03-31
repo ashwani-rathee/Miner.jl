@@ -36,11 +36,11 @@ function PlayerController(scene::Scene; kwargs...)
         forward_key   = get(kwargs, :forward_key,  Keyboard.w),
         backward_key  = get(kwargs, :backward_key,  Keyboard.s),
         # Mouse controls
-        rotation_button = get(kwargs, :rptation_button, Mouse.left),
+        rotation_button = get(kwargs, :rotation_button, Keyboard._1),
     )
 
     settings = Attributes(
-        keyboard_translationspeed = get(kwargs, :keyboard_translationspeed, 0.5f0),
+        keyboard_translationspeed = get(kwargs, :keyboard_translationspeed, 1f0),
         mouse_rotationspeed = get(kwargs, :mouse_rotationspeed, 1f0),
         update_rate = get(kwargs, :update_rate, 1/30),
     )
@@ -163,30 +163,17 @@ function add_rotation!(scene, cam::PlayerController)
     last_mousepos = RefValue(Vec2f(0, 0))
     dragging = RefValue(false)
     e = events(scene)
-
-    # drag start/stop
-    on(camera(scene), e.mousebutton) do event
-        if ispressed(scene, rotation_button[])
-            if event.action == Mouse.press && is_mouseinside(scene) && !dragging[]
-                last_mousepos[] = mouseposition_px(scene)
-                dragging[] = true
-                return Consume(true)
-            end
-        elseif event.action == Mouse.release && dragging[]
-            mousepos = mouseposition_px(scene)
-            dragging[] = false
-            rot_scaling = mouse_rotationspeed[] * (e.window_dpi[] * 0.005)
-            mp = (last_mousepos[] .- mousepos) .* 0.01f0 .* rot_scaling
-            last_mousepos[] = mousepos
-            rotate_cam!(scene, cam, Vec3f(-mp[2], mp[1], 0f0), true)
-            return Consume(true)
+    
+    on(camera(scene), e.keyboardbutton) do event
+        if(event.action == Makie.Keyboard.press && event.key == Keyboard.escape)
+            a = dragging[]
+            dragging[] = !a
         end
-        return Consume(false)
     end
-
     # in drag
     on(camera(scene), e.mouseposition) do mp
-        if dragging[] && ispressed(scene, rotation_button[])
+        
+        if dragging[]
             mousepos = screen_relative(scene, mp)
             rot_scaling = mouse_rotationspeed[] * (e.window_dpi[] * 0.005)
             mp = (last_mousepos[] .- mousepos) * 0.01f0 * rot_scaling

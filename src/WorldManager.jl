@@ -3,7 +3,7 @@ export chunk_index, chunk_center, central_chunk, chunk_range, block_state, gener
 
 # perlin noise
 sampler = perlin_2d(;seed=1)
-
+sampler3 = perlin_3d(seed=1)
 """
     chunk_index(x::Int, z::Int)
 
@@ -64,15 +64,24 @@ function block_state(x::Int, y::Int, z::Int)
 end
 
 function block_state1(x::Int, y::Int, z::Int)
-    surfaceY = 5;
+    surfaceY = 16;
     rands = trunc(Int, 10*sample(sampler, x/10, z/10));
     surfaceY = surfaceY + rands;
     # return (y<surfaceY) ? (:gray, 0.9) : (:gray, 0);
-    seaLevel = 4
+    seaLevel = 13
     if (y<surfaceY)
-        return (y<3) ? (:gray, 1.0) : (:green, 1.0)
+        if(y<13)
+            b = abs(sample(sampler3, x/16, y/16,z/16))
+            # @info b
+            return (b>0.2) ? (:gray, 1) : (:gray, 0)
+        else
+            return (:green, 1.0)
+        end
     elseif (y< seaLevel)
         return (:blue, 0.2)
+    elseif (y>25 && y <28)
+        b = abs(sample(sampler3, x/16, y/16,z/16))
+        return (b>0.35) ? (:white, 1 ) : (:grey,0)
     else
         return (:grey,0)
     end
@@ -121,7 +130,7 @@ end
 
 
 function surface_height(x::Int, z::Int)
-    surfaceY = 5;
+    surfaceY = 16;
     rands = trunc(Int, 10*sample(sampler, x/10, z/10));
     surfaceY = surfaceY + rands;
     return surfaceY
