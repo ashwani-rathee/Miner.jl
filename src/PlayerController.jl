@@ -40,7 +40,7 @@ function PlayerController(scene::Scene; kwargs...)
     )
 
     settings = Attributes(
-        keyboard_translationspeed = get(kwargs, :keyboard_translationspeed, 1f0),
+        keyboard_translationspeed = get(kwargs, :keyboard_translationspeed, 5f0),
         mouse_rotationspeed = get(kwargs, :mouse_rotationspeed, 1f0),
         update_rate = get(kwargs, :update_rate, 1/30),
     )

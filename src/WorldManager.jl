@@ -43,50 +43,6 @@ function chunk_range(chunkindexX::Int, chunkindexZ::Int)
     return ((chunkindexX-32):1:(chunkindexX+31),  (chunkindexZ-32):1:(chunkindexZ+31))
 end
 
-"""
-    block_state(x::Int, y::Int, z::Int)
-
-Return any x,y,z this function tells the block state that locations should be in
-"""
-function block_state(x::Int, y::Int, z::Int)
-    surfaceY = 5;
-    rands = trunc(Int, 10*sample(sampler, x/10, z/10));
-    surfaceY = surfaceY + rands;
-    # return (y<surfaceY) ? (:gray, 0.9) : (:gray, 0);
-    seaLevel = 4
-    if (y<surfaceY)
-        return (y<3) ? BlockType(1) : BlockType(3)
-    elseif (y< seaLevel)
-        return BlockType(2)
-    else
-        return BlockType(0)
-    end
-end
-
-function block_state1(x::Int, y::Int, z::Int)
-    surfaceY = 16;
-    rands = trunc(Int, 10*sample(sampler, x/10, z/10));
-    surfaceY = surfaceY + rands;
-    # return (y<surfaceY) ? (:gray, 0.9) : (:gray, 0);
-    seaLevel = 13
-    if (y<surfaceY)
-        if(y<13)
-            b = abs(sample(sampler3, x/16, y/16,z/16))
-            # @info b
-            return (b>0.2) ? (:gray, 1) : (:gray, 0)
-        else
-            return (:green, 1.0)
-        end
-    elseif (y< seaLevel)
-        return (:blue, 0.2)
-    elseif (y>25 && y <28)
-        b = abs(sample(sampler3, x/16, y/16,z/16))
-        return (b>0.35) ? (:white, 1 ) : (:grey,0)
-    else
-        return (:grey,0)
-    end
-end
-
 @enum BlockType begin
     air = 0
     stone = 1
@@ -95,6 +51,84 @@ end
     dirt = 4
     wood = 5
     leaves = 6
+    bedrock = 7
+    cloud = 8
+end
+
+"""
+    block_state(x::Int, y::Int, z::Int)
+
+Return any x,y,z this function tells the block state that locations should be in
+"""
+# function block_state(x::Int, y::Int, z::Int)
+#     surfaceY = 5;
+#     rands = trunc(Int, 10*sample(sampler, x/10, z/10));
+#     surfaceY = surfaceY + rands;
+#     # return (y<surfaceY) ? (:gray, 0.9) : (:gray, 0);
+#     seaLevel = 4
+#     if (y<surfaceY)
+#         return (y<3) ? BlockType(1) : BlockType(3)
+    
+#     elseif (y< seaLevel)
+#         return BlockType(2)
+    
+#     else
+#         return BlockType(0)
+#     end
+# end
+function block_state(x::Int, y::Int, z::Int)
+    surfaceY = 16;
+    rands = trunc(Int, 5*sample(sampler, x/10, z/10));
+    surfaceY = surfaceY + rands;
+    # return (y<surfaceY) ? (:gray, 0.9) : (:gray, 0);
+    seaLevel = 14
+    if (y<surfaceY)
+        if (y<=-10)
+            if (y<-12)
+                return BlockType(7)
+            elseif (y >-11)
+                return BlockType(1)
+            elseif (rand()>0.2)
+                return BlockType(7)
+            else 
+                return BlockType(1)
+            end
+        elseif (y<8)
+            b = abs(sample(sampler3, x/16, y/16,z/16))
+            # if(y < -10) return BlockType(1) end
+            return (b>0.2) ? BlockType(1) : BlockType(0)
+        elseif (y < surfaceY - 5)
+            return BlockType(1)
+        elseif (y < surfaceY -3)
+            return BlockType(4)
+        elseif (y < surfaceY)
+            return BlockType(3)
+        else 
+            return BlockType(0)
+        end
+    elseif (y< seaLevel)
+        return BlockType(2)
+    elseif (y>25 && y <28)
+        b = abs(sample(sampler3, x/16, y/16,z/16))
+        return (b>0.38) ? BlockType(8) : BlockType(0)
+    else
+        return BlockType(0)
+        if ((x%8 in (0,1,7)) && y<surfaceY+4)
+            # if(z%8 in (0,1,7) )
+            #     if (x%8 == 0 && z%8 ==0 && y<surfaceY+2)
+            #         return BlockType(5)
+            #     elseif (y<surfaceY+3 && y > surfaceY)
+            #         return BlockType(6)
+            #     else
+            #         return BlockType(0)
+            #     end
+            # else 
+            #     return BlockType(0)
+            # end
+        else
+            return BlockType(0)
+        end
+    end
 end
 
 
