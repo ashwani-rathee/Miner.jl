@@ -89,8 +89,8 @@ function start_game()
     song_text = Observable("This will be added to queue: $(songs[song_name[]])")
     text!(subscene, Point(10, 50), text=song_text)
 
-    current_song = Observable("Now Playing:")
-    text!(subscene, Point(10, 70), text=current_song)
+    # current_song = Observable("Now Playing:")
+    # text!(subscene, Point(10, 70), text=current_song)
 
     music_on = Observable(true)
 
@@ -103,8 +103,8 @@ function start_game()
                 @info "Now Playing $file"
                 y, fs = wavread(file)
                 wavplay(y, fs)
-                current_song[] = "Now Playing: $file"
-                notify(current_song)
+                # current_song[] = "Now Playing: $file"
+                # notify(current_song)
                 @info "Music Player: Song ended!"
             end
             sleep(5)
@@ -242,7 +242,6 @@ function start_game()
                 notify(txt)
             end
         elseif (button.key == Makie.Keyboard._4 && button.action == Makie.Keyboard.press)
-            @info song_name[]
             if (song_name[] > 1)
                 song_name[] = song_name[] - 1
                 notify(song_name)
@@ -251,7 +250,6 @@ function start_game()
                 notify(song_text)
             end
         elseif (button.key == Makie.Keyboard._5 && button.action == Makie.Keyboard.press)
-            @info song_name[]
             if (song_name[] < length(songs))
                 song_name[] = song_name[] + 1
                 notify(song_name)
