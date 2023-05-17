@@ -1,5 +1,8 @@
 module Miner
 
+
+const ASSET_DIR = realpath(joinpath(@__DIR__, "../assets"))
+
 using GLMakie
 using CoherentNoise
 # using LinearAlgebra
@@ -83,7 +86,7 @@ function start_game()
     text!(subscene, Point(220, 10), text=camloc)
 
     chnl = Channel{String}(32)
-    songs = filter(x -> endswith(x, ".wav"), readdir("assets"))
+    songs = filter(x -> endswith(x, ".wav"), readdir(ASSET_DIR))
     song_name = Observable(1)
 
     song_text = Observable("This will be added to queue: $(songs[song_name[]])")
