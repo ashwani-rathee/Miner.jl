@@ -1,6 +1,8 @@
-tex = load("assets/texture.png")
-replace!(tex, tex[1, 1] => RGBA{N0f8}(0, 0, 0, 0))
-tex = collect(tex)
+const tex = let
+    tex = load(joinpath(ASSET_DIR, "texture.png"))
+    replace!(tex, tex[1, 1] => RGBA{N0f8}(0, 0, 0, 0))
+    collect(tex)
+end
 
 
 function return_mesh(block::BlockType)    

@@ -1,5 +1,7 @@
 module Miner
 
+const ASSET_DIR = realpath(joinpath(@__DIR__, "../assets"))
+
 using GLMakie
 using CoherentNoise
 using GeometryBasics
