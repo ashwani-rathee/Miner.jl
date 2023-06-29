@@ -1,7 +1,5 @@
 import Base.rand
 
-export chunk_index, chunk_center, central_chunk, chunk_range, block_state, generate_chunk
-
 # perlin noise
 sampler = perlin_2d(;seed=1)
 sampler3 = perlin_3d(seed=1)
@@ -150,41 +148,35 @@ function block_state(x::Int, y::Int, z::Int)
     end
 end
 
-
-"""
-    generate_chunk(chunkindexX::Int, chunkindexZ::Int)
-
-Process and adds chunks blocks to database for later use.
-"""
-function generate_chunk(db, chunkindexX::Int, chunkindexZ::Int)
-    xrange, zrange = chunk_range(chunkindexX, chunkindexZ)
-    @info xrange, zrange
-    yrange = 0:1:20
-
-    write_query = DBInterface.prepare(db, "INSERT INTO chunks (sno, chunkX, chunkZ, x, y, z, blocktype) VALUES (?,?,?,?,?,?,?)") 
-    snos = Vector{String}([])
-    xs = Vector{Int}([])
-    ys = Vector{Int}([])
-    zs = Vector{Int}([])
-    bls = Vector{Int}([])
-    for x in xrange, y in yrange, z in zrange
-        push!(snos, join([x,y,z], '-'))
-        push!(xs, x)
-        push!(ys, y)
-        push!(zs, z)
-        push!(bls, Int(block_state(x, y, z)))
-    end
-    @info length(snos)
-    cXs = [chunkindexX for i in 1:length(snos)]
-    cZs = [chunkindexZ for i in 1:length(snos)]
-    table_data = (sno=snos, chunkX=cXs, chunkZ=cZs, x=xs, y=ys, z=zs, blocktype=bls)
-    DBInterface.executemany(write_query, table_data) 
-end
-
-
 function surface_height(x::Int, z::Int)
     surfaceY = 16;
     rands = trunc(Int, 5*sample(sampler, x/10, z/10));
     surfaceY = surfaceY + rands;
     return surfaceY
 end
+
+function distance(a::Point3f0, b::Point3f0)
+    dist = sqrt((b[1] - a[1])^2 + (b[2] - a[2])^2 + (b[3] - a[3])^2)
+    return dist
+end
+
+function adjacent_blocks(a::Point3f0)
+    neighbors = map(x -> a .+ x, [Point3f0(1, 0, 0), Point3f0(-1, 0, 0), Point3f0(0, 1, 0), Point3f0(0, -1, 0), Point3f0(0, 0, 1), Point3f0(0, 0, -1)])
+    return neighbors
+end
+
+function distance(a::Point3f0, b::Vector{Point3f0})
+    dist = map(x -> distance(a, x), b)
+    ord = sortperm(dist;)
+    return b[ord]
+end
+
+scatter_cases = Dict(
+    10 => Vec4f(0 / 16, 12 / 16, 1 / 16, 13 / 16),
+    11 => Vec4f(1 / 16, 12 / 16, 2 / 16, 13 / 16),
+    12 => Vec4f(2 / 16, 12 / 16, 3 / 16, 13 / 16),
+    13 => Vec4f(3 / 16, 12 / 16, 4 / 16, 13 / 16),
+    14 => Vec4f(4 / 16, 12 / 16, 5 / 16, 13 / 16),
+    15 => Vec4f(5 / 16, 12 / 16, 6 / 16, 13 / 16),
+    16 => Vec4f(6 / 16, 12 / 16, 7 / 16, 13 / 16),
+)

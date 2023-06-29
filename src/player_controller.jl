@@ -1,4 +1,4 @@
-using Makie: 
+using GLMakie.Makie: 
     AbstractCamera, root, deselect_all_cameras!, perspectiveprojection,
     set_proj_view!, screen_relative
 using Base: RefValue
