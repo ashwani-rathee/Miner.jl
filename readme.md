@@ -10,7 +10,8 @@ Voxel World Simulator written using Makie's GLMakie backend in Julia
 - Has a inbuilt music player using Channels and playing audio with WAV.jl
 
 ## Updates:
-![](https://youtu.be/S-uLTsE2wZg)
+
+[![IMAGE ALT TEXT HERE](https://i.imgur.com/eeAaJuK.png)](https://youtu.be/S-uLTsE2wZg)
 
 ## References and Credits
 - Player Controller Camera initially written by @ffreyer
